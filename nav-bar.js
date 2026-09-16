@@ -329,7 +329,8 @@
 
     '.fh-cdate-popup{position:absolute;top:calc(100% + 6px);left:0;width:264px;max-width:88vw;background:#fff;' +
       'border:1px solid #E6E1D8;border-radius:14px;box-shadow:0 10px 30px -8px rgba(15,34,43,0.28);padding:10px;' +
-      'z-index:400;display:none;font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}' +
+      'z-index:400;display:none;font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;' +
+      'max-height:calc(100vh - 24px);overflow-y:auto;box-sizing:border-box;}' +
     '.fh-cdate-popup.open{display:block;}' +
     '.fh-cdate-cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}' +
     '.fh-cdate-cal-title{font-weight:700;font-size:13.5px;color:#0F222B;}' +
@@ -383,6 +384,8 @@
   // (isti razlog zbog kojeg je "Cijena" ranije izlazila preko ivice modala na uzim telefonima).
   function adjustPopupPosition(popup, wrap) {
     popup.style.left = "0";
+    popup.style.top = "calc(100% + 6px)";
+    popup.style.bottom = "";
     var wrapRect = wrap.getBoundingClientRect();
     var popRect = popup.getBoundingClientRect();
     var overflowRight = popRect.right - (window.innerWidth - 8);
@@ -390,6 +393,18 @@
       var newLeft = -overflowRight;
       if (wrapRect.left + newLeft < 8) newLeft = 8 - wrapRect.left;
       popup.style.left = newLeft + "px";
+    }
+    // Ako popup ispod dugmeta ne staje na ekran (npr. polje je nisko u modalu), otvori ga
+    // na gore umjesto na dole - inace zadnji red kalendara/liste ostane van vidljivog dijela.
+    popRect = popup.getBoundingClientRect();
+    var overflowBottom = popRect.bottom - (window.innerHeight - 8);
+    if (overflowBottom > 0) {
+      var spaceAbove = wrapRect.top;
+      var spaceBelow = window.innerHeight - wrapRect.bottom;
+      if (spaceAbove > spaceBelow) {
+        popup.style.top = "auto";
+        popup.style.bottom = "calc(100% + 6px)";
+      }
     }
   }
 
